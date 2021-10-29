@@ -1,31 +1,27 @@
-import pdb
+import itertools
 
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import generics, status
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
 from .models import Animal, Characteristic, Group
 from .serializers import AnimalSerializer
 
 
-class CreateAnimal(generics.ListCreateAPIView):
+class CreateAndShowAnimal(generics.ListCreateAPIView):
 
     queryset = Animal.objects.all()
     serializer_class = AnimalSerializer
 
     def post(self, request):
-        data = request.data
-        name, age, weight, sex, group, characteristics = data.values()
+        data_animal = dict(itertools.islice(request.data.items(), 4))
+        data_characteristics = request.data.pop('characteristics')
+        data_group = request.data.pop('group')
 
-        create_group = Group.objects.create(name=group['name'], scientific_name=group['scientific_name'])
+        group = Group.objects.create(**data_group)
+        animal = Animal.objects.create(**data_animal, group_id=group.id)
 
-        animal = Animal.objects.create(name=name, age=age, weight=weight, sex=sex, group_id=create_group.id)
-
-        for item in characteristics:
-            c = Characteristic.objects.create(name=item['name'])
-            animal.characteristics.add(c)
-
+        animal = self.create_characteristics(animal, data_characteristics)
         serialized = AnimalSerializer(animal)
 
         return Response(serialized.data, status=status.HTTP_201_CREATED)
@@ -36,8 +32,16 @@ class CreateAnimal(generics.ListCreateAPIView):
 
         return Response(serialized.data, status=status.HTTP_200_OK)
 
+    def create_characteristics(self, animal, characteristics):
 
-class GetById(generics.ListCreateAPIView):
+        for item in characteristics:
+            create = Characteristic.objects.create(name=item['name'])
+            animal.characteristics.add(create)
+
+        return animal
+
+
+class ShownAndDeleteById(generics.ListCreateAPIView):
 
     queryset = Animal.objects.all()
     serializer_class = AnimalSerializer
@@ -60,13 +64,3 @@ class GetById(generics.ListCreateAPIView):
 
         except ObjectDoesNotExist:
             return Response({'Error': "animal id is not registered"}, status=status.HTTP_404_NOT_FOUND)
-
-
-# class Delete(APIView):
-#     def delete(self, request, id=''):
-#         try:
-#             animal = Animal.objects.delete(id=id)
-
-#             return Response(serialized.data, status=status.HTTP_204_NO_CONTENT)
-#         except ObjectDoesNotExist:
-#             return Response({'Error': "animal id is not registered"}, status=status.HTTP_404_NOT_FOUND)

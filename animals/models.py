@@ -16,5 +16,6 @@ class Animal(models.Model):
     characteristics = models.ManyToManyField('Characteristic')
 
 
+
 class Characteristic(models.Model):
     name = models.CharField(max_length=255)

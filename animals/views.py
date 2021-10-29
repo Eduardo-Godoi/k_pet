@@ -1,13 +1,16 @@
 import pdb
 
-from rest_framework import generics
+from django.core.exceptions import ObjectDoesNotExist
+from rest_framework import generics, status
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .models import Animal, Characteristic, Group
 from .serializers import AnimalSerializer
 
 
 class CreateAnimal(generics.ListCreateAPIView):
+
     queryset = Animal.objects.all()
     serializer_class = AnimalSerializer
 
@@ -25,10 +28,45 @@ class CreateAnimal(generics.ListCreateAPIView):
 
         serialized = AnimalSerializer(animal)
 
-        return Response(serialized.data)
+        return Response(serialized.data, status=status.HTTP_201_CREATED)
 
     def get(self, request):
         animals = Animal.objects.all()
         serialized = AnimalSerializer(animals, many=True)
 
-        return Response(serialized.data)
+        return Response(serialized.data, status=status.HTTP_200_OK)
+
+
+class GetById(generics.ListCreateAPIView):
+
+    queryset = Animal.objects.all()
+    serializer_class = AnimalSerializer
+
+    def get(self, request, id=''):
+        try:
+
+            animal = Animal.objects.get(id=id)
+            serialized = AnimalSerializer(animal)
+            return Response(serialized.data, status=status.HTTP_200_OK)
+
+        except ObjectDoesNotExist:
+            return Response({'Error': "animal id is not registered"}, status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request, id=''):
+        try:
+            animal = Animal.objects.get(id=id)
+            animal.delete()
+            return Response('', status=status.HTTP_204_NO_CONTENT)
+
+        except ObjectDoesNotExist:
+            return Response({'Error': "animal id is not registered"}, status=status.HTTP_404_NOT_FOUND)
+
+
+# class Delete(APIView):
+#     def delete(self, request, id=''):
+#         try:
+#             animal = Animal.objects.delete(id=id)
+
+#             return Response(serialized.data, status=status.HTTP_204_NO_CONTENT)
+#         except ObjectDoesNotExist:
+#             return Response({'Error': "animal id is not registered"}, status=status.HTTP_404_NOT_FOUND)

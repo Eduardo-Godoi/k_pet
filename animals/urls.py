@@ -5,5 +5,5 @@ from .views import CreateAndShowAnimal, ShownAndDeleteById
 
 urlpatterns = [
     path('animals/', CreateAndShowAnimal.as_view()),
-    path('animals/<str:id>', ShownAndDeleteById.as_view())
+    path('animals/<str:animal_id>', ShownAndDeleteById.as_view())
 ]

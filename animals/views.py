@@ -15,13 +15,11 @@ class CreateAndShowAnimal(generics.ListCreateAPIView):
 
     def post(self, request):
         data_animal = dict(itertools.islice(request.data.items(), 4))
-        data_characteristics = request.data.pop('characteristics')
-        data_group = request.data.pop('group')
 
-        group = self.verify_group(data_group)
+        group, create = Group.objects.get_or_create(**request.data['group'])
         animal = Animal.objects.create(**data_animal, group_id=group.id)
 
-        animal = self.verify_characteristics(animal, data_characteristics)
+        animal = self.verify_characteristics(animal, request.data['characteristics'])
         serialized = AnimalSerializer(animal)
 
         return Response(serialized.data, status=status.HTTP_201_CREATED)
@@ -35,25 +33,9 @@ class CreateAndShowAnimal(generics.ListCreateAPIView):
     def verify_characteristics(self, animal, characteristics):
 
         for item in characteristics:
-            characteristic = Characteristic.objects.filter(name=item['name']).first()
-
-            if characteristic is None:
-                create = Characteristic.objects.create(name=item['name'])
-                animal.characteristics.add(create)
-
-            if characteristic:
-                animal.characteristics.add(characteristic)
-
+            characteristic, create = Characteristic.objects.get_or_create(**item)
+            animal.characteristics.add(characteristic)
         return animal
-
-    def verify_group(self, group):
-
-        handle_group = Group.objects.filter(name=group['name']).first()
-
-        if handle_group is None:
-            return Group.objects.create(**group)
-
-        return handle_group
 
 
 class ShownAndDeleteById(generics.ListCreateAPIView):

@@ -30,29 +30,13 @@ System check identified no issues (0 silenced).
 test_create_animal (test_api.TestAnimalView) ... ok
 test_create_two_animals_with_the_same_characteristic (test_api.TestAnimalView) ... ok
 test_create_two_animals_with_the_same_group (test_api.TestAnimalView) ... ok
-test_delete_animal (test_api.TestAnimalView) ... FAIL
-test_filter_animals (test_api.TestAnimalView) ... FAIL
+test_delete_animal (test_api.TestAnimalView) ... ok
+test_filter_animals (test_api.TestAnimalView) ... ok
 test_get_two_animals_alike (test_api.TestAnimalView) ... ok
 test_list_animals (test_api.TestAnimalView) ... ok
 
-======================================================================
-FAIL: test_delete_animal (test_api.TestAnimalView)
 ----------------------------------------------------------------------
-Traceback (most recent call last):
-  File "/home/eduardo/projetos-kenzie-q4/kenzie_pet/test_api.py", line 125, in test_delete_animal
-    self.assertEqual(delete_response.status_code, 204)
-AssertionError: 404 != 204
+Ran 7 tests in 0.103s
 
-======================================================================
-FAIL: test_filter_animals (test_api.TestAnimalView)
-----------------------------------------------------------------------
-Traceback (most recent call last):
-  File "/home/eduardo/projetos-kenzie-q4/kenzie_pet/test_api.py", line 117, in test_filter_animals
-    self.assertEqual(get_response.status_code, 200)
-AssertionError: 404 != 200
-
-----------------------------------------------------------------------
-Ran 7 tests in 0.097s
-
-FAILED (failures=2)
+OK
 Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...

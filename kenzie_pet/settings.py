@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-8sds#+p1h5e3t3l5cafxd-+s4nhk4jyvwg3jh&^#v(+wn7nsgy
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['kenziepet.herokuapp.com', 'localhost']
 
 
 # Application definition
@@ -77,8 +77,12 @@ WSGI_APPLICATION = 'kenzie_pet.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'django_deploy',
+        'USER': 'eduardo',
+        'PASSWORD': '1234',
+        'HOST': 'localhost', # Por estar configurado localmente vai ser no localhost ou 127.0.0.1
+        'PORT': '5432' # Por padrão o PostgreSQL roda na porta 5432
     }
 }
 
